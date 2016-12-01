@@ -1,0 +1,40 @@
+Example program:
+
+let x = 0;
+let y = 10;
+let z = x + y;
+out z;
+
+<TAB> := "  " // Just for clarity
+<NEWLINE> := "\r\n"
+<whitespace> := " " | <TAB> | <NEWLINE> | <whitespace> <whitespace>
+
+// Optional whitespace
+<optws> := <whitespace> <optws> | "" 
+
+<letter> := "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" |
+            "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" |
+            "w" | "x" | "y" | "z" | 
+            "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" |
+            "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" |
+            "W" | "X" | "Y" | "Z"
+
+<digit> := "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+<number> := <digit> <number> | <digit>
+
+<keyword> := "out" | "in" | "let"
+
+<identifier> := <letter> <identifier> | <letter>
+
+// Binary operator, like x + y, rather than XOR x (unary)
+<bin-op> := "+" | "-" | "==" | "<" | ">"
+
+<expression> := <identifier> | <number> | <expression> <optws> <bin-op> <optws> <expression>
+
+<declaration> := "let" <whitespace> <assignment>
+<assignment> := <identifier> <whitespace> "=" <whitespace> <expression>
+<command> := <keyword> <whitespace> <expression>
+<statement> := <declaration> | <assignment> | <command>
+
+<full-statement> := <optws> <statement> <optws> ";"
+<program> := <program> <full-statement> | <full-statement>

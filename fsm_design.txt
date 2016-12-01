@@ -1,0 +1,94 @@
+FSM spec for lexer. Matches greedily, first things will be matched before
+last things in list. Anything unmatched will result in an error.
+Anything not matched 
+Letter: [A-Za-z]
+Digit: [0-9]
+Whitespace: \s
+
+start
+  Digit:  number
+  Whitespace: start
+  "i":    keyword_i
+  "o":    keyword_o
+  "l":    keyword_l
+  "+":    plus
+  "-":    minus
+  "=":    equals
+  ";":    separator
+  Letter: identifier
+
+
+identifier
+  Letter:     identifier
+  "+":        plus       | "IDENTIFIER"
+  "-":        minus      | "IDENTIFIER"
+  Whitespace: start      | "IDENTIFIER"
+  "=":        equals     | "IDENTIFIER"
+  ";":        separator  | "IDENTIFIER"
+
+plus
+  Letter:     identifier | "PLUS"
+  Digit:      number     | "PLUS"
+  Whitespace: start      | "PLUS"
+
+minus
+  Letter:     identifier | "MINUS"
+  Digit:      number     | "MINUS"
+  Whitespace: start      | "MINUS"
+
+equals
+  Letter:     identifier | "EQUALS"
+  Digit:      number     | "EQUALS"
+  Whitespace: start      | "EQUALS"
+
+number
+  Digit: number
+  Whitespace: start      | "NUMBER"
+  "+":        plus       | "NUMBER"
+  "-":        minus      | "NUMBER"
+  ";":        separator  | "NUMBER"
+
+separator FINAL
+  Digit:  number | "SEPARATOR"
+  Whitespace: start | "SEPARATOR"
+  "i":    keyword_i | "SEPARATOR"
+  "o":    keyword_o | "SEPARATOR"
+  "l":    keyword_l | "SEPARATOR"
+  "+":    plus | "SEPARATOR"
+  "-":    minus | "SEPARATOR"
+  "=":    equals | "SEPARATOR"
+  ";":    separator | "SEPARATOR"
+  Letter: identifier | "SEPARATOR"
+
+
+##############
+## KEYWORDS ##
+##############
+
+# IN KEYWORD
+keyword_i
+  "n": keyword_in
+  Letter: identifier
+keyword_in
+  Whitespace: start | "KEYWORD"
+
+# OUT KEYWORD
+keyword_o
+  "u": keyword_ou
+  Letter: identifier
+keyword_ou
+  "t": keyword_out
+  Letter: identifier
+keyword_out
+  Whitespace: start | "KEYWORD"
+  
+# LET KEYWORD
+keyword_l
+  "e": keyword_le
+  Letter: identifier
+keyword_le
+  "t": keyword_let
+  Letter: identifier
+keyword_let
+  Whitespace: start | "KEYWORD"
+
