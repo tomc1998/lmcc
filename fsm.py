@@ -1,4 +1,6 @@
+import re
 import lexeme
+import token
 
 class MultipleStartStatesError(Exception):
   pass
@@ -16,10 +18,18 @@ class FSMStatePath:
 class FSMState:
   def __init__(self, is_final):
     # paths is an array of FSMStatePaths.
-    self.paths = [] 
+    self.paths = []
     self.is_final = is_final
 
-# Make sure to call restart_machine after setting the start state before
+# Gets the path associated with the str token given, or None if not found
+  def get_path_from_token(self, token):
+    for path in self.paths:
+      if (re.match(path.rule, token) != None):
+        return path
+    return None
+
+
+    # Make sure to call restart_machine after setting the start state before
 # running.
 class FSM:
   def __init__(self):
@@ -51,14 +61,15 @@ class FSM:
     if (self.__curr_state == None):
       raise StateNotDefinedError("""You need to reset the FSM to a valid state \
           before stepping""")
-    elif (token.len() > 1):
+    elif (len(token) > 1):
       token = token[0]
-    if (token in self.__curr_state.paths):
-      path = self.__curr_state.paths[token]
-      self.__curr_state = self.__curr_state.paths[token]
-      return path.output
-    else:
+    print("Token: ", token)
+    path = self.__curr_state.get_path_from_token(token)
+    if (path == None):
       return "ERROR"
+    else:
+      self.__curr_state = path.resultState
+      return path.output
 
   def is_final(self):
     if (self.__curr_state == None):
@@ -68,10 +79,14 @@ class FSM:
 # Run the FSM on a string until the string ends
   def run(self, tokens):
     outputs = []
+    curr_lexeme = lexeme.Lexeme("")
     for c in tokens:
-      output = step(c)
+      output = self.step(c)
       if (output != None):
-        outputs.append(output)
+        outputs.append(token.Token(curr_lexeme, output))
+        curr_lexeme = lexeme.Lexeme("")
+      if (curr_lexeme.val != "" or re.match("\s", c) == None):
+        curr_lexeme.val += c;
     return outputs
 
 

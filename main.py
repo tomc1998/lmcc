@@ -1,11 +1,6 @@
 import lexer
 
-test_program = \
-"""
-let x = 0;
-let y = 10;
-let z = x + y;
-out z;
-"""
+test_program = "let x = 10; let y = 20; let xplusy = x+y; out xy;"
+
 lexer.lex(test_program);
 
